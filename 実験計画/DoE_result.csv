@@ -1,0 +1,9 @@
+var,pointa,code,func,y
+static,Yes,few,many,3
+dynamic,Yes,few,few,2
+static,No,few,few,4
+dynamic,No,few,many,5
+static,Yes,many,many,3
+dynamic,Yes,many,few,1
+static,No,many,few,3
+dynamic,No,many,many,3
