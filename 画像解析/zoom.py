@@ -36,6 +36,74 @@ def shape(imary):
                dst[y][x] = 255
     return dst.astype(int)
 
+#雑音除去
+def noise(imary):
+    src = imary.copy()
+    for y in range(len(src)):
+        for x in range(len(src[y])):
+            tmp = []
+            if y == 0 and x == 0:
+                tmp.append([src[y+1][x+1],
+                            src[y+1][x],
+                            src[y][x+1],
+                            src[y][x]])
+            elif y == 0 and x == (len(src[y]) - 1):
+                tmp.append([src[y+1][x-1],
+                            src[y+1][x],
+                            src[y][x-1],
+                            src[y][x]])
+            elif y == (len(src) - 1) and x == (len(src[y]) - 1):
+                tmp.append([src[y-1][x-1],
+                            src[y-1][x],
+                            src[y][x-1],
+                            src[y][x]])
+            elif y == (len(src) - 1) and x == 0:
+                tmp.append([src[y-1][x+1],
+                            src[y-1][x],
+                            src[y][x+1],
+                            src[y][x]])
+            elif y == 0:
+                tmp.append([src[y+1][x+1],
+                            src[y+1][x],
+                            src[y+1][x-1],
+                            src[y][x+1],
+                            src[y][x],
+                            src[y][x-1]])
+            elif y == (len(src) - 1):
+                tmp.append([src[y-1][x+1],
+                            src[y-1][x],
+                            src[y-1][x-1],
+                            src[y][x+1],
+                            src[y][x],
+                            src[y][x-1]])
+            elif x == 0:
+                tmp.append([src[y+1][x+1],
+                            src[y+1][x],
+                            src[y][x+1],
+                            src[y][x],
+                            src[y-1][x+1],
+                            src[y-1][x]])
+            elif x == (len(src[y]) - 1):
+                tmp.append([src[y+1][x-1],
+                            src[y+1][x],
+                            src[y][x-1],
+                            src[y][x],
+                            src[y-1][x-1],
+                            src[y-1][x]])
+            else:
+                tmp.append([src[y+1][x-1],
+                            src[y+1][x],
+                            src[y+1][x+1],
+                            src[y][x-1],
+                            src[y][x],
+                            src[y][x+1],
+                            src[y-1][x-1],
+                            src[y-1][x],
+                            src[y-1][x+1]])
+            tmp = np.array(tmp)
+            imary[y][x] = np.median(tmp)
+    return imary
+
 #拡大鮮明化
 def zoom_clear(imary):
     mask = np.zeros((len(imary), len(imary[0])))
@@ -56,6 +124,7 @@ def zoom_clear(imary):
                 tmp1[y][x] = (tmp1[y-1][x] + tmp1[y+1][x]) / 2
     #tmp1 = shape(tmp1.astype(int))
     tmp1 = contrast(tmp1.astype(int))
+    tmp1 = noise(tmp1)
     return tmp1.astype(int)
 
 
@@ -66,6 +135,6 @@ imary = np.array(image)
 tmp = zoom_clear(imary)
 #tmp = contrast(tmp)
 clrim = Image.fromarray(tmp).convert("RGB")
-clrim.save("dst/clear2.png")
+clrim.save("dst/clear3.png")
 plt.imshow(tmp, cmap="gray")
 plt.show()
