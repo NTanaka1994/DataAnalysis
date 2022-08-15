@@ -12,7 +12,7 @@ def depth(jsn, var=""):
         print(var+"="+str(jsn))
         pass
 
-def width(jsn, ed=[], var=""):
+def width(jsn, ed=[]):
     root = []
     if isinstance(jsn, dict):
         for row in jsn:
@@ -62,4 +62,4 @@ res = requests.get(url)
 data = json.loads(res.text)
 
 depth(data, "data")
-width(data, var="data")
+width(data)
