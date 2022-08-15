@@ -5,7 +5,7 @@ def depth(jsn, var=""):
     if isinstance(jsn, dict):
         for row in jsn:
             depth(jsn[row], var=var+"[\""+row+"\"]")
-    elif isinstance(jsn, list):
+    elif isinstance(jsn, list) and jsn != []:
         for i in range(len(jsn)):
             depth(jsn[i], var=var+"["+str(i)+"]")
     else:
@@ -46,7 +46,7 @@ def width(jsn, ed=[], var=""):
                 tmp.append(jsn)
                 ed.append(row)
             root.append(ed.copy())
-        elif isinstance(jsn, list):
+        elif isinstance(jsn, list) and jsn! = []:
             for i in range(len(jsn)):
                 tmp.append(jsn)
                 ed.append(i)
