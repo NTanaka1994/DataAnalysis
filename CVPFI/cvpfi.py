@@ -4,8 +4,9 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import eli5
 
-def cvpif_val_reg(df, y_col, cv=10):
+def cvpfi_val_reg(df, y_col, cv=10):
     imp = {}
+    err = {}
     cols = df.drop(y_col, axis=1).columns
     for i in range(cv):
         df_tmp = df.copy()
@@ -18,6 +19,7 @@ def cvpif_val_reg(df, y_col, cv=10):
         html_data = eli5.show_weights(PFI, feature_names = x_train.columns.tolist()).data
         col = x_train.columns
         tmp = {}
+        tmpe = {}
         for j in range(len(col)):
             soup = BeautifulSoup(html_data, "html.parser")
             Feature = soup.select(".eli5-weights > tbody:nth-child(2) > tr:nth-child("+str(j+1)+") > td:nth-child(2)")
@@ -49,24 +51,29 @@ def cvpif_val_reg(df, y_col, cv=10):
                         ew = k
                         break
             Feature = Feature[sf:ef].replace(" ", "").replace("\n", "")
-            Weghits = float(Weghits[sw:ew].replace(" ", "").replace("\n", "").split("±")[0])
+            data = Weghits[sw:ew].replace(" ", "").replace("\n", "").split("±")
+            Weghits = float(data[0])
+            Err = float(data[1])
             tmp[Feature] = Weghits
+            tmpe[Feature] = Err
         imp[i] = tmp
+        err[i] = tmpe
     result = []
     for col in cols:
         total = 0
+        tte = 0
         for i in range(cv):
             total = total + imp[i][col]
-        result.append(total / cv)
-    for i in range(len(result)):
-        result[i] = result[i] / sum(result)
-    df_cvpif = pd.DataFrame(result)
-    df_cvpif.columns = ["CVPIF"]
-    df_cvpif.index = cols
-    return df_cvpif
+            tte = tte + err[i][col]
+        result.append([total / cv, tte/cv])
+    df_cvpfi = pd.DataFrame(result)
+    df_cvpfi.columns = ["CVPFI", "±Err"]
+    df_cvpfi.index = cols
+    return df_cvpfi
 
-def cvpif_val_cla(df, y_col, cv=10):
+def cvpfi_val_cla(df, y_col, cv=10):
     imp = {}
+    err = {}
     cols = df.drop(y_col, axis=1).columns
     for i in range(cv):
         df_tmp = df.copy()
@@ -79,6 +86,7 @@ def cvpif_val_cla(df, y_col, cv=10):
         html_data = eli5.show_weights(PFI, feature_names = x_train.columns.tolist()).data
         col = x_train.columns
         tmp = {}
+        tmpe = {}
         for j in range(len(col)):
             soup = BeautifulSoup(html_data, "html.parser")
             Feature = soup.select(".eli5-weights > tbody:nth-child(2) > tr:nth-child("+str(j+1)+") > td:nth-child(2)")
@@ -110,18 +118,22 @@ def cvpif_val_cla(df, y_col, cv=10):
                         ew = k
                         break
             Feature = Feature[sf:ef].replace(" ", "").replace("\n", "")
-            Weghits = float(Weghits[sw:ew].replace(" ", "").replace("\n", "").split("±")[0])
+            data = Weghits[sw:ew].replace(" ", "").replace("\n", "").split("±")
+            Weghits = float(data[0])
+            Err = float(data[1])
             tmp[Feature] = Weghits
+            tmpe[Feature] = Err
         imp[i] = tmp
+        err[i] = tmpe
     result = []
     for col in cols:
         total = 0
+        tte = 0
         for i in range(cv):
             total = total + imp[i][col]
-        result.append(total / cv)
-    for i in range(len(result)):
-        result[i] = result[i] / sum(result)
-    df_cvpif = pd.DataFrame(result)
-    df_cvpif.columns = ["CVPIF"]
-    df_cvpif.index = cols
-    return df_cvpif
+            tte = tte + err[i][col]
+        result.append([total / cv, tte / cv])
+    df_cvpfi = pd.DataFrame(result)
+    df_cvpfi.columns = ["CVPFI", "±Err"]
+    df_cvpfi.index = cols
+    return df_cvpfi
