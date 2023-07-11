@@ -1,0 +1,10 @@
+horTh：ホルモン療法(Yes or No)
+age：患者の年齢
+menostat：閉経状態(pre：閉経前、post：閉経後)
+tsize：腫瘍サイズ(mm単位)
+tgrade：腫瘍のグレードⅠ<Ⅱ<Ⅲ
+pnodes：正のノードの数
+progrec:プロゲステロン受容体(fmol単位)
+stree：エストロゲン受容体(fmol単位)
+time：無再発生存期間(日数)
+cens：打ち切りインジケーター(0：打ち切り、1：イベント)
